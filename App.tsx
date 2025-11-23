@@ -1,31 +1,46 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+import HomeScreen from './screens/HomeScreen';
+import ReportsScreen from './screens/ReportsScreen';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <NavigationContainer>
       <StatusBar style="auto" />
-      <Text style={styles.title}>Odaklanma Takibi Uygulaması</Text>
-      <Text style={styles.subtitle}>Geliştirme aşamasında...</Text>
-    </View>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: '#4A90E2',
+          tabBarInactiveTintColor: '#999',
+          headerStyle: {
+            backgroundColor: '#4A90E2',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        <Tab.Screen 
+          name="Ana Sayfa" 
+          component={HomeScreen}
+          options={{
+            tabBarLabel: 'Zamanlayıcı',
+            tabBarIcon: () => null,
+          }}
+        />
+        <Tab.Screen 
+          name="Raporlar" 
+          component={ReportsScreen}
+          options={{
+            tabBarLabel: 'Raporlar',
+            tabBarIcon: () => null,
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
