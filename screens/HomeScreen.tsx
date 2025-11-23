@@ -18,14 +18,16 @@ export default function HomeScreen() {
   const [showSummary, setShowSummary] = useState(false);
   const [sessionSummary, setSessionSummary] = useState<FocusSession | null>(null);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const appState = useRef(AppState.currentState);
   const wasInBackground = useRef(false);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => {
-      subscription.remove();
+      if (subscription) {
+        subscription.remove();
+      }
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
@@ -73,7 +75,8 @@ export default function HomeScreen() {
             {
               text: 'Durdur',
               onPress: () => {
-                handlePause();
+                setIsRunning(false);
+                setIsPaused(true);
                 wasInBackground.current = false;
               },
             },
@@ -85,7 +88,8 @@ export default function HomeScreen() {
       if (isRunning && !isPaused) {
         wasInBackground.current = true;
         setDistractionCount((prev) => prev + 1);
-        handlePause();
+        setIsRunning(false);
+        setIsPaused(true);
       }
     }
     appState.current = nextAppState;
