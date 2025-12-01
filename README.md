@@ -129,3 +129,8 @@ Bu proje eğitim amaçlı geliştirilmiştir.
 
 **Not**: Bu uygulama BSM 447 - Mobil Uygulama Geliştirme dersi için geliştirilmiştir.
 
+
+
+
+
+
