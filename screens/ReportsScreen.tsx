@@ -48,7 +48,7 @@ export default function ReportsScreen() {
   };
 
   const pieData = stats.categoryDistribution.map((item) => ({
-    name: item.category,
+    name: `${item.category} (${item.percentage.toFixed(1)}%)`,
     population: item.duration,
     color: getColorForCategory(item.category),
     legendFontColor: '#333',
@@ -108,9 +108,9 @@ export default function ReportsScreen() {
           />
         </View>
 
-        {pieData.length > 0 && (
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Kategori Dağılımı</Text>
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>Kategori Dağılımı</Text>
+          {pieData.length > 0 ? (
             <PieChart
               data={pieData}
               width={screenWidth - 40}
@@ -123,8 +123,14 @@ export default function ReportsScreen() {
               paddingLeft="15"
               absolute
             />
-          </View>
-        )}
+          ) : (
+            <View style={styles.emptyChartContainer}>
+              <Text style={styles.emptyChartText}>
+                Henüz kategori verisi yok.{'\n'}Seans tamamladığınızda burada görünecek.
+              </Text>
+            </View>
+          )}
+        </View>
 
         {stats.categoryDistribution.length > 0 && (
           <View style={styles.categoryList}>
@@ -256,5 +262,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     fontWeight: '600',
+  },
+  emptyChartContainer: {
+    height: 220,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyChartText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
