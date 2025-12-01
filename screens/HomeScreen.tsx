@@ -7,8 +7,10 @@ import { saveSession } from '../utils/storage';
 
 const DEFAULT_DURATION = 25; // dakika
 const categories: Category[] = ['Ders Çalışma', 'Kodlama', 'Proje', 'Kitap Okuma'];
+const durationOptions = [5, 10, 15, 20, 25, 30, 45, 60]; // dakika cinsinden seçenekler
 
 export default function HomeScreen() {
+  const [selectedDuration, setSelectedDuration] = useState<number>(DEFAULT_DURATION);
   const [timeLeft, setTimeLeft] = useState(DEFAULT_DURATION * 60); // saniye cinsinden
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -18,81 +20,120 @@ export default function HomeScreen() {
   const [showSummary, setShowSummary] = useState(false);
   const [sessionSummary, setSessionSummary] = useState<FocusSession | null>(null);
 
-  const intervalRef = useRef<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const appState = useRef(AppState.currentState);
   const wasInBackground = useRef(false);
+  const sessionDataRef = useRef<{
+    startTime: number;
+    duration: number;
+    category: Category;
+    distractions: number;
+  } | null>(null);
 
+  // AppState listener
   useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        // Uygulamaya geri dönüldü
+        if (wasInBackground.current && isRunning && !isPaused) {
+          Alert.alert(
+            'Dikkat Dağınıklığı Tespit Edildi',
+            'Uygulamadan ayrıldınız. Seansı devam ettirmek ister misiniz?',
+            [
+              {
+                text: 'Devam Et',
+                onPress: () => {
+                  wasInBackground.current = false;
+                  setIsRunning(true);
+                  setIsPaused(false);
+                },
+              },
+              {
+                text: 'Durdur',
+                onPress: () => {
+                  setIsRunning(false);
+                  setIsPaused(true);
+                  wasInBackground.current = false;
+                },
+              },
+            ]
+          );
+        }
+      } else if (appState.current === 'active' && nextAppState.match(/inactive|background/)) {
+        // Uygulamadan ayrıldı
+        if (isRunning && !isPaused) {
+          wasInBackground.current = true;
+          setDistractionCount((prev) => prev + 1);
+          setIsRunning(false);
+          setIsPaused(true);
+        }
+      }
+      appState.current = nextAppState;
+    };
+
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => {
-      if (subscription) {
-        subscription.remove();
-      }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      subscription?.remove();
     };
   }, [isRunning, isPaused]);
 
+  // Timer logic
   useEffect(() => {
     if (isRunning && !isPaused) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
-          if (prev <= 1) {
-            handleTimerComplete();
+          const newTime = prev - 1;
+          if (newTime <= 0) {
+            // Timer bitti
+            setIsRunning(false);
+            setIsPaused(false);
+            if (sessionDataRef.current) {
+              completeSession(true);
+            }
             return 0;
           }
-          return prev - 1;
+          return newTime;
         });
       }, 1000);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     }
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [isRunning, isPaused]);
 
-  const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-      // Uygulamaya geri dönüldü
-      if (wasInBackground.current && isRunning && !isPaused) {
-        Alert.alert(
-          'Dikkat Dağınıklığı Tespit Edildi',
-          'Uygulamadan ayrıldınız. Seansı devam ettirmek ister misiniz?',
-          [
-            {
-              text: 'Devam Et',
-              onPress: () => {
-                wasInBackground.current = false;
-              },
-            },
-            {
-              text: 'Durdur',
-              onPress: () => {
-                setIsRunning(false);
-                setIsPaused(true);
-                wasInBackground.current = false;
-              },
-            },
-          ]
-        );
-      }
-    } else if (appState.current === 'active' && nextAppState.match(/inactive|background/)) {
-      // Uygulamadan ayrıldı
-      if (isRunning && !isPaused) {
-        wasInBackground.current = true;
-        setDistractionCount((prev) => prev + 1);
-        setIsRunning(false);
-        setIsPaused(true);
-      }
-    }
-    appState.current = nextAppState;
+  const completeSession = async (completed: boolean) => {
+    if (!sessionDataRef.current) return;
+
+    const endTime = Date.now();
+    const sessionDuration = Math.floor(
+      (sessionDataRef.current.duration * 60 - timeLeft) / 60
+    );
+    const today = new Date().toISOString().split('T')[0];
+
+    const session: FocusSession = {
+      id: Date.now().toString(),
+      startTime: sessionDataRef.current.startTime,
+      endTime,
+      duration: sessionDuration,
+      category: sessionDataRef.current.category,
+      distractionCount: sessionDataRef.current.distractions,
+      completed,
+      date: today,
+    };
+
+    await saveSession(session);
+    setSessionSummary(session);
+    setShowSummary(true);
+    sessionDataRef.current = null;
   };
 
   const handleStart = () => {
@@ -100,7 +141,20 @@ export default function HomeScreen() {
       Alert.alert('Uyarı', 'Lütfen bir kategori seçin');
       return;
     }
-    setSessionStartTime(Date.now());
+    // Önce interval'ı temizle
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setTimeLeft(selectedDuration * 60);
+    const startTime = Date.now();
+    setSessionStartTime(startTime);
+    sessionDataRef.current = {
+      startTime,
+      duration: selectedDuration,
+      category: selectedCategory,
+      distractions: 0,
+    };
     setIsRunning(true);
     setIsPaused(false);
     setDistractionCount(0);
@@ -127,22 +181,21 @@ export default function HomeScreen() {
           text: 'Sıfırla',
           style: 'destructive',
           onPress: () => {
-            setTimeLeft(DEFAULT_DURATION * 60);
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+            }
+            setTimeLeft(selectedDuration * 60);
             setIsRunning(false);
             setIsPaused(false);
             setDistractionCount(0);
             setSessionStartTime(null);
             setShowSummary(false);
+            sessionDataRef.current = null;
           },
         },
       ]
     );
-  };
-
-  const handleTimerComplete = () => {
-    setIsRunning(false);
-    setIsPaused(false);
-    saveSessionData(true);
   };
 
   const handleStop = () => {
@@ -156,34 +209,14 @@ export default function HomeScreen() {
           onPress: () => {
             setIsRunning(false);
             setIsPaused(false);
-            saveSessionData(false);
+            if (sessionDataRef.current) {
+              sessionDataRef.current.distractions = distractionCount;
+              completeSession(false);
+            }
           },
         },
       ]
     );
-  };
-
-  const saveSessionData = async (completed: boolean) => {
-    if (!sessionStartTime) return;
-
-    const endTime = Date.now();
-    const duration = Math.floor((DEFAULT_DURATION * 60 - timeLeft) / 60); // dakika
-    const today = new Date().toISOString().split('T')[0];
-
-    const session: FocusSession = {
-      id: Date.now().toString(),
-      startTime: sessionStartTime,
-      endTime,
-      duration,
-      category: selectedCategory,
-      distractionCount,
-      completed,
-      date: today,
-    };
-
-    await saveSession(session);
-    setSessionSummary(session);
-    setShowSummary(true);
   };
 
   const formatTime = (seconds: number): string => {
@@ -194,10 +227,25 @@ export default function HomeScreen() {
 
   const handleCloseSummary = () => {
     setShowSummary(false);
-    setTimeLeft(DEFAULT_DURATION * 60);
+    setTimeLeft(selectedDuration * 60);
     setSessionStartTime(null);
     setDistractionCount(0);
+    sessionDataRef.current = null;
   };
+
+  const handleDurationChange = (duration: number) => {
+    if (!isRunning && !isPaused) {
+      setSelectedDuration(duration);
+      setTimeLeft(duration * 60);
+    }
+  };
+
+  // Dikkat dağınıklığı sayısını ref'e kaydet
+  useEffect(() => {
+    if (sessionDataRef.current) {
+      sessionDataRef.current.distractions = distractionCount;
+    }
+  }, [distractionCount]);
 
   if (showSummary && sessionSummary) {
     return (
@@ -246,6 +294,22 @@ export default function HomeScreen() {
             >
               {categories.map((cat) => (
                 <Picker.Item key={cat} label={cat} value={cat} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.categoryContainer}>
+          <Text style={styles.label}>Süre Seçin (dakika):</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedDuration}
+              onValueChange={(itemValue: number) => handleDurationChange(itemValue)}
+              enabled={!isRunning && !isPaused}
+              style={styles.picker}
+            >
+              {durationOptions.map((dur) => (
+                <Picker.Item key={dur} label={`${dur} dakika`} value={dur} />
               ))}
             </Picker>
           </View>
