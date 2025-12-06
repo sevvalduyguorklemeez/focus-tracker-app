@@ -101,8 +101,10 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     marginTop: 10,
+    width: '100%',
   },
   progressBar: {
+    width: '100%',
     height: 10,
     backgroundColor: '#E2E8F0',
     borderRadius: 8,
