@@ -5,6 +5,7 @@ import { BarChart, PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { SessionStats } from '../types';
 import { calculateStats } from '../utils/stats';
+import Pet from '../components/Pet';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -62,6 +63,9 @@ export default function ReportsScreen() {
     >
       <View style={styles.content}>
         <Text style={styles.title}>Raporlar</Text>
+
+        {/* Evcil Hayvan */}
+        <Pet totalMinutes={stats.allTimeTotal} />
 
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
@@ -164,16 +168,17 @@ const getColorForCategory = (category: string): string => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F8FAFC',
   },
   content: {
-    padding: 20,
+    padding: 24,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
+    fontSize: 36,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 28,
+    letterSpacing: -1,
   },
   loadingText: {
     fontSize: 18,
@@ -188,64 +193,76 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   statCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 20,
     width: '30%',
     minWidth: 100,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
     marginBottom: 10,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
   },
   statLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 8,
+    fontSize: 11,
+    color: '#64748B',
+    marginBottom: 10,
     textAlign: 'center',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '900',
     color: '#4A90E2',
+    marginTop: 4,
+    letterSpacing: -0.5,
   },
   chartContainer: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    borderRadius: 20,
+    marginBottom: 24,
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
   },
   chartTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 20,
+    letterSpacing: -0.3,
   },
   categoryList: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 20,
+    marginBottom: 24,
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
   },
   categoryItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#E2E8F0',
   },
   categoryColor: {
     width: 20,
@@ -256,12 +273,15 @@ const styles = StyleSheet.create({
   categoryName: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: '#1E293B',
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
   categoryValue: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '600',
+    fontSize: 15,
+    color: '#64748B',
+    fontWeight: '800',
+    letterSpacing: 0.2,
   },
   emptyChartContainer: {
     height: 220,
