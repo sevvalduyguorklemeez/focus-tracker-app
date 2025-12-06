@@ -301,17 +301,35 @@ export default function HomeScreen() {
 
         <View style={styles.categoryContainer}>
           <Text style={styles.label}>Süre Seçin (dakika):</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={selectedDuration}
-              onValueChange={(itemValue: number) => handleDurationChange(itemValue)}
-              enabled={!isRunning && !isPaused}
-              style={styles.picker}
+          <View style={styles.durationSelector}>
+            <TouchableOpacity
+              style={[styles.durationButton, (!isRunning && !isPaused && selectedDuration > 5) ? styles.durationButtonActive : styles.durationButtonDisabled]}
+              onPress={() => {
+                if (!isRunning && !isPaused && selectedDuration > 5) {
+                  handleDurationChange(selectedDuration - 5);
+                }
+              }}
+              disabled={isRunning || isPaused || selectedDuration <= 5}
             >
-              {durationOptions.map((dur) => (
-                <Picker.Item key={dur} label={`${dur} dakika`} value={dur} />
-              ))}
-            </Picker>
+              <Text style={[styles.durationButtonText, (!isRunning && !isPaused && selectedDuration > 5) ? styles.durationButtonTextActive : styles.durationButtonTextDisabled]}>−</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.durationDisplay}>
+              <Text style={styles.durationValue}>{selectedDuration}</Text>
+              <Text style={styles.durationUnit}>dakika</Text>
+            </View>
+            
+            <TouchableOpacity
+              style={[styles.durationButton, (!isRunning && !isPaused && selectedDuration < 60) ? styles.durationButtonActive : styles.durationButtonDisabled]}
+              onPress={() => {
+                if (!isRunning && !isPaused && selectedDuration < 60) {
+                  handleDurationChange(selectedDuration + 5);
+                }
+              }}
+              disabled={isRunning || isPaused || selectedDuration >= 60}
+            >
+              <Text style={[styles.durationButtonText, (!isRunning && !isPaused && selectedDuration < 60) ? styles.durationButtonTextActive : styles.durationButtonTextDisabled]}>+</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -363,149 +381,293 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F8FAFC',
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 30,
+    fontSize: 36,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 40,
+    letterSpacing: -1,
+    textAlign: 'center',
   },
   categoryContainer: {
     width: '100%',
-    marginBottom: 40,
+    marginBottom: 32,
   },
   label: {
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#475569',
+    marginBottom: 12,
+    letterSpacing: 0.3,
+  },
+  durationSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    padding: 8,
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  durationButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 8,
+  },
+  durationButtonActive: {
+    backgroundColor: '#4A90E2',
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  durationButtonDisabled: {
+    backgroundColor: '#F1F5F9',
+  },
+  durationButtonText: {
+    fontSize: 32,
+    fontWeight: '800',
+    lineHeight: 36,
+  },
+  durationButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  durationButtonTextDisabled: {
+    color: '#CBD5E1',
+  },
+  durationDisplay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  durationValue: {
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#1E293B',
+    letterSpacing: -1,
+  },
+  durationUnit: {
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 10,
+    color: '#64748B',
+    marginTop: 4,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   pickerContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
     overflow: 'hidden',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
   },
   picker: {
-    height: 50,
+    height: 56,
+    backgroundColor: '#FFFFFF',
   },
   timerContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 40,
+    paddingVertical: 30,
+    paddingHorizontal: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 8,
+    minWidth: 280,
   },
   timerText: {
-    fontSize: 72,
-    fontWeight: 'bold',
+    fontSize: 88,
+    fontWeight: '900',
     color: '#4A90E2',
-    marginBottom: 10,
+    marginBottom: 12,
+    letterSpacing: -3,
+    textShadowColor: 'rgba(74, 144, 226, 0.25)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 8,
   },
   timerLabel: {
-    fontSize: 18,
-    color: '#666',
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#64748B',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   distractionContainer: {
-    backgroundColor: '#FFF3CD',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 20,
+    backgroundColor: '#FEF3C7',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 24,
+    borderWidth: 2,
+    borderColor: '#FCD34D',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   distractionText: {
-    fontSize: 14,
-    color: '#856404',
-    fontWeight: '600',
+    fontSize: 15,
+    color: '#92400E',
+    fontWeight: '700',
+    letterSpacing: 0.3,
+    textAlign: 'center',
   },
   buttonContainer: {
     width: '100%',
-    gap: 15,
+    gap: 16,
   },
   startButton: {
     backgroundColor: '#4A90E2',
-    padding: 18,
-    borderRadius: 12,
+    padding: 20,
+    borderRadius: 20,
     alignItems: 'center',
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 0,
   },
   pauseButton: {
-    backgroundColor: '#FFA500',
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: '#F59E0B',
+    padding: 20,
+    borderRadius: 20,
     alignItems: 'center',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 0,
   },
   resumeButton: {
-    backgroundColor: '#28A745',
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: '#10B981',
+    padding: 20,
+    borderRadius: 20,
     alignItems: 'center',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 0,
   },
   stopButton: {
-    backgroundColor: '#DC3545',
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: '#EF4444',
+    padding: 20,
+    borderRadius: 20,
     alignItems: 'center',
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 0,
   },
   resetButton: {
-    backgroundColor: '#6C757D',
+    backgroundColor: '#64748B',
     padding: 18,
-    borderRadius: 12,
+    borderRadius: 18,
     alignItems: 'center',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
+    borderWidth: 0,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   summaryContainer: {
-    backgroundColor: '#fff',
-    padding: 30,
-    borderRadius: 15,
+    backgroundColor: '#FFFFFF',
+    padding: 32,
+    borderRadius: 24,
     margin: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
   },
   summaryTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 24,
     textAlign: 'center',
+    letterSpacing: -0.5,
   },
   summaryItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#E2E8F0',
   },
   summaryLabel: {
     fontSize: 16,
-    color: '#666',
+    color: '#64748B',
     fontWeight: '600',
+    letterSpacing: 0.2,
   },
   summaryValue: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: 'bold',
+    fontSize: 17,
+    color: '#1E293B',
+    fontWeight: '800',
+    letterSpacing: 0.2,
   },
   closeButton: {
     backgroundColor: '#4A90E2',
-    padding: 15,
-    borderRadius: 10,
+    padding: 18,
+    borderRadius: 16,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 24,
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   closeButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
 });
