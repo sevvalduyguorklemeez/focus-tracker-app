@@ -16,6 +16,7 @@ const getPetSize = (level: number): number => {
 };
 
 const getPetEmoji = (level: number): string => {
+  if (level >= 12) return '🦄'; // Unicorn
   if (level >= 10) return '🐉'; // Ejderha
   if (level >= 7) return '🦁'; // Aslan
   if (level >= 5) return '🐺'; // Kurt
@@ -24,6 +25,7 @@ const getPetEmoji = (level: number): string => {
 };
 
 const getPetName = (level: number): string => {
+  if (level >= 12) return 'Unicorn';
   if (level >= 10) return 'Ejderha';
   if (level >= 7) return 'Aslan';
   if (level >= 5) return 'Kurt';
