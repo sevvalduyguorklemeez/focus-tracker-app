@@ -10,6 +10,7 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
 - **Kontrol butonları**: Başlat, Duraklat, Devam Et, Bitir, Sıfırla
 - **Dikkat dağınıklığı takibi**: AppState API ile uygulamadan çıkış tespiti
 - **Seans özeti**: Seans bitiminde detaylı özet gösterimi
+- **evcil hayvan besleme**: çalıştığınız süre boyunca görselleştirilmiş bir evcil hayvan mevcuttur
 
 ### Raporlar Ekranı
 - **Genel İstatistikler**:
