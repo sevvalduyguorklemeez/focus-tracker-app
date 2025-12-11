@@ -21,6 +21,8 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
   - Son 7 güne ait odaklanma sürelerini gösteren çubuk grafik (Bar Chart)
   - Kategorilere göre dağılımı gösteren pasta grafik (Pie Chart)
   - Kategori detayları listesi
+  - evcil hayvanının büyüme grafiği
+  - kullancı giriş çıkışı
 
 ### Teknik Özellikler
 - **AppState API**: Uygulamadan çıkış/geri dönüş tespiti
