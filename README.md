@@ -24,6 +24,7 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
   - evcil hayvanının büyüme grafiği
   - kullancı giriş çıkışı güncellendi
     girişler kayıt altına alındı
+    -tasarım özelliştirmesi yapıldı
 
 ### Teknik Özellikler
 - **AppState API**: Uygulamadan çıkış/geri dönüş tespiti
