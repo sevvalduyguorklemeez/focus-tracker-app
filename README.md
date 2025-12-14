@@ -73,6 +73,7 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
 - **AsyncStorage**: Yerel veri depolama
 - **react-native-chart-kit**: Grafik görselleştirme
 - **@react-native-picker/picker**: Kategori seçimi için
+  
 
 ## 📁 Proje Yapısı
 
@@ -107,6 +108,9 @@ focus-tracker-app/
    - Alt menüden "Raporlar" sekmesine geçin
    - İstatistikleri ve grafikleri görüntüleyin
    - Aşağı çekerek verileri yenileyin
+  
+  4. **Evcil hayvan eklentisi**
+      - kullanıcıya daha iyi bir performans sunmak için arayüze çalışma süresine göre büyüyen bir evcil hayvan eklendi
 
 ## 📊 Veri Yapısı
 
