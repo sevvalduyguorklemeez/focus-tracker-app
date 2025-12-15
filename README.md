@@ -167,4 +167,5 @@ Bu proje eğitim amaçlı geliştirilmiştir.
 <<<<<<< HEAD
 
 
-
+=======
+>>>>>>> 681851b (README guncellendi - hizli baslangic ve Firebase eklendi)
