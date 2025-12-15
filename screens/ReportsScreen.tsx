@@ -8,6 +8,7 @@ import { calculateStats } from '../utils/stats';
 import Pet from '../components/Pet';
 
 const screenWidth = Dimensions.get('window').width;
+const chartWidth = screenWidth - 64; // padding için daha fazla alan
 
 export default function ReportsScreen() {
   const [stats, setStats] = useState<SessionStats | null>(null);
@@ -48,12 +49,23 @@ export default function ReportsScreen() {
     ],
   };
 
+  // Kategori isimlerini kısalt
+  const shortenCategory = (cat: string): string => {
+    const shortNames: { [key: string]: string } = {
+      'Ders Çalışma': 'Ders',
+      'Kitap Okuma': 'Kitap',
+      'Kodlama': 'Kod',
+      'Proje': 'Proje',
+    };
+    return shortNames[cat] || cat;
+  };
+
   const pieData = stats.categoryDistribution.map((item) => ({
-    name: `${item.category} (${item.percentage.toFixed(1)}%)`,
+    name: `${shortenCategory(item.category)} (${item.percentage.toFixed(0)}%)`,
     population: item.duration,
     color: getColorForCategory(item.category),
-    legendFontColor: '#333',
-    legendFontSize: 12,
+    legendFontColor: '#1E293B',
+    legendFontSize: 11,
   }));
 
   return (
@@ -86,8 +98,8 @@ export default function ReportsScreen() {
           <Text style={styles.chartTitle}>Son 7 Gün</Text>
           <BarChart
             data={barData}
-            width={screenWidth - 40}
-            height={220}
+            width={chartWidth}
+            height={200}
             yAxisLabel=""
             yAxisSuffix=" dk"
             chartConfig={{
@@ -117,14 +129,14 @@ export default function ReportsScreen() {
           {pieData.length > 0 ? (
             <PieChart
               data={pieData}
-              width={screenWidth - 40}
-              height={220}
+              width={chartWidth}
+              height={180}
               chartConfig={{
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               }}
               accessor="population"
               backgroundColor="transparent"
-              paddingLeft="15"
+              paddingLeft="0"
               absolute
             />
           ) : (
@@ -171,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   content: {
-    padding: 24,
+    padding: 16,
   },
   title: {
     fontSize: 36,
@@ -226,9 +238,9 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     backgroundColor: '#FFFFFF',
-    padding: 24,
+    padding: 16,
     borderRadius: 20,
-    marginBottom: 24,
+    marginBottom: 20,
     shadowColor: '#4A90E2',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.12,

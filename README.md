@@ -32,13 +32,24 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
 - **Tab Navigator**: Alt menü ile ekranlar arası geçiş
 - **TypeScript**: Tip güvenliği
 
-## 🚀 Kurulum ve Çalıştırma
+## 🚀 Hızlı Başlangıç
+
+```bash
+# 1. Bağımlılıkları kur
+npm install
+
+# 2. Uygulamayı başlat
+npx expo start
+
+# 3. Expo Go uygulamasıyla QR kodu tara
+```
+
+## 📋 Kurulum ve Çalıştırma
 
 ### Gereksinimler
 - Node.js (v14 veya üzeri)
 - npm veya yarn
-- Expo CLI
-- Android Studio (Android emülatör için) veya Xcode (iOS simülatör için)
+- Expo Go uygulaması (mobil cihazınızda)
 
 ### Adımlar
 
@@ -55,13 +66,13 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
 
 3. **Uygulamayı başlatın**
    ```bash
-   npm start
+   npx expo start
    ```
 
 4. **Cihazda çalıştırma**
+   - **Fiziksel Cihaz**: Expo Go uygulamasını indirip QR kodu tarayın
    - **Android Emülatör**: Terminal'de `a` tuşuna basın
    - **iOS Simülatör**: Terminal'de `i` tuşuna basın
-   - **Fiziksel Cihaz**: Expo Go uygulamasını indirip QR kodu tarayın
    - **Web**: Terminal'de `w` tuşuna basın
 
 ## 📦 Kullanılan Teknolojiler
@@ -70,9 +81,10 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
 - **Expo**: React Native geliştirme platformu
 - **TypeScript**: Tip güvenliği için
 - **React Navigation**: Navigasyon yönetimi
+- **Firebase Authentication**: Kullanıcı kayıt ve giriş sistemi
+- **Firebase Firestore**: Bulut veritabanı
 - **AsyncStorage**: Yerel veri depolama
 - **react-native-chart-kit**: Grafik görselleştirme
-- **@react-native-picker/picker**: Kategori seçimi için
   
 
 ## 📁 Proje Yapısı
@@ -81,9 +93,17 @@ React Native (Expo) ile geliştirilmiş odaklanma takibi ve raporlama uygulamas�
 focus-tracker-app/
 ├── screens/
 │   ├── HomeScreen.tsx      # Ana sayfa - Zamanlayıcı
-│   └── ReportsScreen.tsx   # Raporlar ekranı
+│   ├── ReportsScreen.tsx   # Raporlar ekranı
+│   ├── LoginScreen.tsx     # Giriş ekranı
+│   └── RegisterScreen.tsx  # Kayıt ekranı
+├── components/
+│   └── Pet.tsx             # Evcil hayvan bileşeni
+├── context/
+│   └── AuthContext.tsx     # Kimlik doğrulama context'i
+├── config/
+│   └── firebase.ts         # Firebase yapılandırması
 ├── utils/
-│   ├── storage.ts          # AsyncStorage işlemleri
+│   ├── storage.ts          # AsyncStorage + Firestore işlemleri
 │   └── stats.ts            # İstatistik hesaplamaları
 ├── types/
 │   └── index.ts            # TypeScript tip tanımları
@@ -143,6 +163,8 @@ Bu proje eğitim amaçlı geliştirilmiştir.
 
 
 
+
+<<<<<<< HEAD
 
 
 

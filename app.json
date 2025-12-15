@@ -13,8 +13,35 @@
       "bundleIdentifier": "com.focustracker.app"
     },
     "android": {
-      "package": "com.focustracker.app"
+      "package": "com.focustracker.app",
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4A90E2",
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7299b591-c580-4a37-a5b6-8d020e62c5ca"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7299b591-c580-4a37-a5b6-8d020e62c5ca"
     }
   }
 }
+
+
+
 

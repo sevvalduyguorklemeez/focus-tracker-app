@@ -4,6 +4,12 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, AppState, AppStateStat
 import { Picker } from '@react-native-picker/picker';
 import { Category, FocusSession } from '../types';
 import { saveSession } from '../utils/storage';
+import { 
+  sendTimerCompleteNotification, 
+  scheduleReminderNotification,
+  cancelAllNotifications,
+  requestNotificationPermissions 
+} from '../utils/notifications';
 
 const DEFAULT_DURATION = 25; // dakika
 const categories: Category[] = ['Ders Çalışma', 'Kodlama', 'Proje', 'Kitap Okuma'];
@@ -23,12 +29,18 @@ export default function HomeScreen() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const appState = useRef(AppState.currentState);
   const wasInBackground = useRef(false);
+  const reminderNotificationIdRef = useRef<string | null>(null);
   const sessionDataRef = useRef<{
     startTime: number;
     duration: number;
     category: Category;
     distractions: number;
   } | null>(null);
+
+  // Bildirim izinlerini başlangıçta iste
+  useEffect(() => {
+    requestNotificationPermissions();
+  }, []);
 
   // AppState listener
   useEffect(() => {
@@ -83,6 +95,20 @@ export default function HomeScreen() {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           const newTime = prev - 1;
+          
+          // Yarı yolda hatırlatma bildirimi (sadece bir kez)
+          if (newTime === Math.floor(prev / 2) && reminderNotificationIdRef.current === null && sessionDataRef.current) {
+            const remainingSeconds = Math.floor(newTime);
+            if (remainingSeconds > 60) { // En az 1 dakika kaldıysa hatırlat
+              scheduleReminderNotification(
+                remainingSeconds,
+                sessionDataRef.current.category
+              ).then(id => {
+                if (id) reminderNotificationIdRef.current = id;
+              });
+            }
+          }
+          
           if (newTime <= 0) {
             // Timer bitti
             setIsRunning(false);
@@ -131,6 +157,21 @@ export default function HomeScreen() {
     };
 
     await saveSession(session);
+    
+    // Timer tamamlandığında bildirim gönder
+    if (completed) {
+      await sendTimerCompleteNotification(
+        sessionDataRef.current.category,
+        sessionDuration
+      );
+    }
+    
+    // Bekleyen hatırlatma bildirimlerini iptal et
+    if (reminderNotificationIdRef.current) {
+      await cancelAllNotifications();
+      reminderNotificationIdRef.current = null;
+    }
+    
     setSessionSummary(session);
     setShowSummary(true);
     sessionDataRef.current = null;
@@ -146,6 +187,10 @@ export default function HomeScreen() {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    // Önceki bildirimleri iptal et
+    cancelAllNotifications();
+    reminderNotificationIdRef.current = null;
+    
     setTimeLeft(selectedDuration * 60);
     const startTime = Date.now();
     setSessionStartTime(startTime);
@@ -185,6 +230,10 @@ export default function HomeScreen() {
               clearInterval(intervalRef.current);
               intervalRef.current = null;
             }
+            // Bildirimleri iptal et
+            cancelAllNotifications();
+            reminderNotificationIdRef.current = null;
+            
             setTimeLeft(selectedDuration * 60);
             setIsRunning(false);
             setIsPaused(false);
@@ -209,6 +258,10 @@ export default function HomeScreen() {
           onPress: () => {
             setIsRunning(false);
             setIsPaused(false);
+            // Bildirimleri iptal et
+            cancelAllNotifications();
+            reminderNotificationIdRef.current = null;
+            
             if (sessionDataRef.current) {
               sessionDataRef.current.distractions = distractionCount;
               completeSession(false);
